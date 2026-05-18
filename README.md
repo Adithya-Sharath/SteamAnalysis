@@ -22,6 +22,8 @@ A latent factor collaborative filtering model trained on real Steam playtime dat
 | Portal | Half-Life 2: Episode One | 0.54 |
 | CS:GO | — | weak (bias dominates) |
 
+![PCA of game embeddings](data/pca_plot.png)
+
 **CS:GO bias = +0.978** — the model says everyone overplays it relative to what their genre preference alone would predict. The similarity embedding is noisy because its userbase is too large and diverse to find a clean direction.
 
 PCA of all 8,928 game embeddings shows clear genre clustering — shooters, strategy, indie, Valve titles — with no genre labels ever provided during training.
@@ -108,7 +110,7 @@ Hosted on **Hugging Face Spaces** (FastAPI): `https://aduguduu-steam-analysis.hf
 
 ## How to Run
 
-**Training** (requires data in `/home/shara/SteamAnalysis/data/`):
+**Training** (requires data in `data/`):
 
 ```bash
 pip install fastai scikit-learn
