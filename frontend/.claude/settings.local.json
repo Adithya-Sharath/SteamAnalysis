@@ -1,0 +1,13 @@
+{
+  "permissions": {
+    "allow": [
+      "Read(//c/Users/shara/SteamAnalysis/**)",
+      "Bash(npm install *)",
+      "Read(///wsl.localhost/Ubuntu/home/**)",
+      "Read(///wsl.localhost/Ubuntu//**)",
+      "PowerShell(wsl -e bash -c \"cd ~/SteamAnalysis/frontend && npm install gh-pages --save-dev 2>&1\")",
+      "PowerShell(wsl -e bash -c \"cd ~/SteamAnalysis/frontend && which npm && npm --version\")",
+      "PowerShell(wsl -e bash -c \"ls /usr/bin/npm /usr/local/bin/npm 2>&1; which node 2>&1\")"
+    ]
+  }
+}

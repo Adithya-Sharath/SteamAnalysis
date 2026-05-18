@@ -1,0 +1,10 @@
+data/recommendations.csv
+data/df_clean.csv
+data/game_weights.npy
+data/game_bias.npy
+node_modules/
+frontend/node_modules/
+__pycache__/
+*.pyc
+.ipynb_checkpoints/
+steam_collab.pkl
