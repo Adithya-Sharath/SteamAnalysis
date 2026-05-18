@@ -1,0 +1,250 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Steam Analysis — Collaborative Filtering Recommender</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;800;900&display=swap" rel="stylesheet" />
+    <script src="https://cdn.jsdelivr.net/npm/plotly.js-dist@2.26.0/plotly.min.js"></script>
+    <script type="module" crossorigin src="/SteamAnalysis/assets/index-BlWjQ-C-.js"></script>
+    <link rel="stylesheet" crossorigin href="/SteamAnalysis/assets/index-DSIfXGnQ.css">
+  </head>
+  <body>
+
+    <!-- ── HERO ── -->
+    <section id="hero">
+      <div class="hero-inner">
+        <p class="hero-eyebrow">Machine Learning Project</p>
+        <h1 class="hero-title">
+          <span class="hero-title-line1">41 Million Reviews.</span>
+          <span class="hero-title-line2">One model. What should you play next?</span>
+        </h1>
+        <p class="hero-subtitle">A collaborative filtering recommender built on 41 million Steam reviews</p>
+        <p class="hero-stack">PyTorch · FastAPI · Hugging Face Spaces · PCA · Cosine Similarity</p>
+        <a href="#demo" class="cta-btn">Explore the Demo &nbsp;→</a>
+        <p class="hero-byline">· Built by Adithya Sharath Kumar ·</p>
+      </div>
+
+    </section>
+
+    <!-- ── DATASET ── -->
+    <section id="dataset" class="section">
+      <div class="section-inner">
+        <h2 class="section-heading reveal">The Dataset</h2>
+        <p class="section-lead reveal">Raw Steam review data — scraped, filtered, and shaped into a sparse interaction matrix the model could actually learn from.</p>
+        <div class="stats-grid">
+          <div class="stat-card reveal">
+            <span class="stat-num" data-target="41000000" data-suffix="M" data-divisor="1000000">0</span>
+            <span class="stat-label">Raw reviews (2024)</span>
+          </div>
+          <div class="stat-card reveal">
+            <span class="stat-num" data-target="13800000" data-suffix="M" data-divisor="1000000">0</span>
+            <span class="stat-label">Interactions after filtering</span>
+          </div>
+          <div class="stat-card reveal">
+            <span class="stat-num" data-target="680000" data-suffix="k" data-divisor="1000">0</span>
+            <span class="stat-label">Active users</span>
+          </div>
+          <div class="stat-card reveal">
+            <span class="stat-num" data-target="8928" data-suffix="" data-divisor="1">0</span>
+            <span class="stat-label">Games in the model</span>
+          </div>
+        </div>
+        <p class="dataset-note reveal">Filtered to users with ≥10 reviews and games with ≥200 reviews — removing bots and obscure titles that would add noise without signal.</p>
+      </div>
+    </section>
+
+    <!-- ── HOW IT WORKS ── -->
+    <section id="methodology" class="section section-alt">
+      <div class="section-inner">
+        <h2 class="section-heading reveal">How It Works</h2>
+        <p class="section-lead reveal">Six design decisions that turned a raw playtime matrix into a game understanding engine.</p>
+        <div class="steps-list">
+
+          <div class="step-card reveal-left">
+            <span class="step-num">01</span>
+            <div class="step-body">
+              <h3 class="step-title">Log-transform playtime</h3>
+              <p class="step-desc">Raw hours are skewed. A user with 5,000 hours dominates the loss. <code>log1p(hours)</code> compresses this into a 0–6.9 range the model can learn from.</p>
+            </div>
+          </div>
+
+          <div class="step-card reveal-right">
+            <span class="step-num">02</span>
+            <div class="step-body">
+              <h3 class="step-title">Latent factor model</h3>
+              <p class="step-desc">Each game and user gets a 50-dimensional embedding vector. The model learns these vectors end-to-end by minimizing prediction error on held-out reviews.</p>
+            </div>
+          </div>
+
+          <div class="step-card reveal-left">
+            <span class="step-num">03</span>
+            <div class="step-body">
+              <h3 class="step-title">Dot product prediction</h3>
+              <p class="step-desc">To predict how much user A will play game B: take the dot product of their vectors plus bias terms. Simple, interpretable, powerful.</p>
+            </div>
+          </div>
+
+          <div class="step-card reveal-right">
+            <span class="step-num">04</span>
+            <div class="step-body">
+              <h3 class="step-title">Weight decay regularization</h3>
+              <p class="step-desc">Without it the model memorizes individual users. <code>wd=0.1</code> keeps embedding values small, forcing the model to find shared structure across games. PCA variance doubled when we added this.</p>
+            </div>
+          </div>
+
+          <div class="step-card reveal-left">
+            <span class="step-num">05</span>
+            <div class="step-body">
+              <h3 class="step-title">Bias terms</h3>
+              <p class="step-desc">Every game has a bias score separate from its embedding. CS:GO bias=+0.978 means everyone overplays it relative to what genre preference alone predicts.</p>
+            </div>
+          </div>
+
+          <div class="step-card reveal-right">
+            <span class="step-num">06</span>
+            <div class="step-body">
+              <h3 class="step-title">Cosine similarity</h3>
+              <p class="step-desc">Normalize all game embeddings to unit length. Then similarity between two games = their dot product. Portal and Portal 2 score 0.76 — the model never saw genre labels.</p>
+            </div>
+          </div>
+
+        </div>
+      </div>
+    </section>
+
+    <!-- ── WHAT THE MODEL LEARNED ── -->
+    <section id="learned" class="section">
+      <div class="section-inner">
+        <h2 class="section-heading reveal">What the Model Learned</h2>
+        <p class="section-lead reveal">Without any genre tags, ratings, or metadata — purely from who played what and for how long.</p>
+
+        <div class="learned-grid">
+
+          <div class="learned-col reveal">
+            <h3 class="learned-subhead loved-head">Universally Loved</h3>
+            <p class="learned-note">Bias = how much everyone overplays a game relative to genre preference alone.</p>
+            <div id="loved-list" class="bias-list">
+              <div class="bias-skeleton"></div>
+            </div>
+          </div>
+
+          <div class="learned-col reveal">
+            <h3 class="learned-subhead disliked-head">Universally Disliked</h3>
+            <p class="learned-note">Negative bias = everyone underplays, regardless of whether they bought in.</p>
+            <div id="disliked-list" class="bias-list">
+              <div class="bias-skeleton"></div>
+            </div>
+          </div>
+
+        </div>
+
+        <div class="portal-callout reveal">
+          <div class="portal-header">
+            <span class="portal-badge">Hero Result</span>
+            <h3 class="portal-title">Portal → Portal 2</h3>
+          </div>
+          <p class="portal-desc">The model discovered Valve's single-player universe without being told. No genre labels. No developer tags. Just playtime patterns.</p>
+          <div class="portal-results">
+            <div class="portal-item">
+              <span class="portal-game">Portal 2</span>
+              <div class="portal-bar-bg"><div class="portal-bar" style="--score: 76%"></div></div>
+              <span class="portal-score">0.76</span>
+            </div>
+            <div class="portal-item">
+              <span class="portal-game">Half-Life 2</span>
+              <div class="portal-bar-bg"><div class="portal-bar" style="--score: 55%"></div></div>
+              <span class="portal-score">0.55</span>
+            </div>
+            <div class="portal-item">
+              <span class="portal-game">Half-Life 2: Episode One</span>
+              <div class="portal-bar-bg"><div class="portal-bar" style="--score: 54%"></div></div>
+              <span class="portal-score">0.54</span>
+            </div>
+            <div class="portal-item">
+              <span class="portal-game">Half-Life 2: Episode Two</span>
+              <div class="portal-bar-bg"><div class="portal-bar" style="--score: 54%"></div></div>
+              <span class="portal-score">0.54</span>
+            </div>
+          </div>
+        </div>
+
+      </div>
+    </section>
+
+    <!-- ── INTERACTIVE DEMO ── -->
+    <section id="demo" class="section section-alt">
+      <div class="section-inner">
+        <h2 class="section-heading reveal">Interactive Demo</h2>
+        <p class="section-lead reveal">Search any game and see what the model thinks is similar — or explore all 8,928 embeddings on the scatter plot.</p>
+
+        <div class="demo-panel reveal">
+          <h3 class="demo-panel-title">Find Similar Games</h3>
+          <div class="search-wrap">
+            <input type="text" id="search-input" class="search-input" placeholder="Type a game name…" autocomplete="off" />
+            <div id="suggestions" class="suggestions hidden"></div>
+          </div>
+          <div id="similar-results" class="similar-results">
+            <p class="demo-hint">Search for a game above to see recommendations.</p>
+          </div>
+        </div>
+
+        <div class="embed-section reveal">
+          <h3 class="embed-section-title">8,928 games. No genre labels. The model figured it out anyway.</h3>
+          <div id="pca-plot" class="pca-plot">
+            <div class="pca-loading">Loading 8,928 game embeddings…</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── LIMITATIONS ── -->
+    <section id="limitations" class="section">
+      <div class="section-inner">
+        <h2 class="section-heading reveal">Limitations &amp; Transparency</h2>
+        <p class="section-lead reveal">Honest about what the model gets wrong.</p>
+        <div class="limits-list">
+          <div class="limit-card reveal">
+            <span class="limit-icon">⚠</span>
+            <div>
+              <h3 class="limit-title">CS:GO similarity is weak</h3>
+              <p class="limit-desc">Its userbase is too large and diverse for the embedding to find a clean direction. High bias (everyone plays it) but the similarity vector is noise.</p>
+            </div>
+          </div>
+          <div class="limit-card reveal">
+            <span class="limit-icon">⚠</span>
+            <div>
+              <h3 class="limit-title">Dataset bias toward popular games</h3>
+              <p class="limit-desc">Filtered to games with ≥200 reviews — meaning the dataset skews toward English-speaking markets and already-popular titles. Niche or non-English games are underrepresented.</p>
+            </div>
+          </div>
+          <div class="limit-card reveal">
+            <span class="limit-icon">⚠</span>
+            <div>
+              <h3 class="limit-title">Cold-start problem</h3>
+              <p class="limit-desc">New games with few reviews have poor embeddings. The model can't recommend something it has barely seen — a fundamental limitation of collaborative filtering.</p>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- ── FOOTER ── -->
+    <footer id="footer">
+      <div class="footer-inner">
+        <div class="footer-top">
+          <span class="footer-title">Steam Analysis</span>
+          <div class="footer-links">
+            <a href="https://github.com/Adithya-Sharath" target="_blank" rel="noopener" class="footer-link">GitHub</a>
+            <a href="https://huggingface.co/aduguduu" target="_blank" rel="noopener" class="footer-link">Hugging Face</a>
+          </div>
+        </div>
+        <p class="footer-credit">Built by Adithya Sharath Kumar</p>
+        <p class="footer-details">10 epochs · n_factors=50 · wd=0.1 · 13.8M interactions · PyTorch</p>
+      </div>
+    </footer>
+
+  </body>
+</html>

@@ -1,0 +1,30 @@
+(function(){let e=document.createElement(`link`).relList;if(e&&e.supports&&e.supports(`modulepreload`))return;for(let e of document.querySelectorAll(`link[rel="modulepreload"]`))n(e);new MutationObserver(e=>{for(let t of e)if(t.type===`childList`)for(let e of t.addedNodes)e.tagName===`LINK`&&e.rel===`modulepreload`&&n(e)}).observe(document,{childList:!0,subtree:!0});function t(e){let t={};return e.integrity&&(t.integrity=e.integrity),e.referrerPolicy&&(t.referrerPolicy=e.referrerPolicy),e.crossOrigin===`use-credentials`?t.credentials=`include`:e.crossOrigin===`anonymous`?t.credentials=`omit`:t.credentials=`same-origin`,t}function n(e){if(e.ep)return;e.ep=!0;let n=t(e);fetch(e.href,n)}})();var e=`https://aduguduu-steam-analysis.hf.space`,t=[],n=!1,r=!1,i=new IntersectionObserver(e=>{e.forEach(e=>{e.isIntersecting&&(e.target.classList.add(`visible`),i.unobserve(e.target))})},{threshold:.12});document.querySelectorAll(`.reveal, .reveal-left, .reveal-right`).forEach(e=>{i.observe(e)});function a(e){let t=parseInt(e.dataset.target,10),n=parseFloat(e.dataset.divisor)||1,r=e.dataset.suffix||``,i=performance.now();function a(o){let s=Math.min((o-i)/1400,1);e.textContent=(t*(1-(1-s)**3)/n).toFixed(+(n>=1e6))+r,s<1?requestAnimationFrame(a):e.textContent=(t/n).toFixed(+(n>=1e6))+r}requestAnimationFrame(a)}var o=new IntersectionObserver(e=>{e.forEach(e=>{if(e.isIntersecting){let t=e.target.querySelector(`.stat-num`);t&&!t.dataset.counted&&(t.dataset.counted=`true`,a(t)),o.unobserve(e.target)}})},{threshold:.3});document.querySelectorAll(`.stat-card`).forEach(e=>o.observe(e));async function s(){if(!r){r=!0;try{let t=await fetch(`${e}/bias?n=10`).then(e=>e.json()),n=Math.max(...t.loved.map(e=>e.bias));document.getElementById(`loved-list`).innerHTML=t.loved.map((e,t)=>`
+      <div class="bias-item">
+        <span class="bias-rank">${t+1}</span>
+        <span class="bias-name">${e.name}</span>
+        <div class="bias-bar-wrap">
+          <div class="bias-bar-bg">
+            <div class="bias-bar-fill loved-fill" data-width="${(e.bias/n*100).toFixed(1)}%"></div>
+          </div>
+        </div>
+        <span class="bias-score-label">+${e.bias.toFixed(3)}</span>
+      </div>`).join(``);let r=Math.max(...t.disliked.map(e=>Math.abs(e.bias)));document.getElementById(`disliked-list`).innerHTML=t.disliked.map((e,t)=>`
+      <div class="bias-item">
+        <span class="bias-rank">${t+1}</span>
+        <span class="bias-name">${e.name}</span>
+        <div class="bias-bar-wrap">
+          <div class="bias-bar-bg">
+            <div class="bias-bar-fill disliked-fill" data-width="${(Math.abs(e.bias)/r*100).toFixed(1)}%"></div>
+          </div>
+        </div>
+        <span class="bias-score-label">${e.bias.toFixed(3)}</span>
+      </div>`).join(``),requestAnimationFrame(()=>{requestAnimationFrame(()=>{document.querySelectorAll(`.bias-bar-fill`).forEach(e=>{e.style.width=e.dataset.width})})})}catch{document.getElementById(`loved-list`).innerHTML=`<p style="color:var(--steel-blue)">Could not load data.</p>`,document.getElementById(`disliked-list`).innerHTML=`<p style="color:var(--steel-blue)">Could not load data.</p>`}}}var c=new IntersectionObserver(e=>{e[0].isIntersecting&&(s(),c.disconnect())},{threshold:.05});c.observe(document.getElementById(`learned`));async function l(){if(!n){n=!0;try{let t=await fetch(`${e}/pca`).then(e=>e.json()),n=t.map(e=>e.x),r=t.map(e=>e.y),i=t.map(e=>e.name),a=t.map(e=>e.bias);Plotly.newPlot(`pca-plot`,[{x:n,y:r,text:i,mode:`markers`,marker:{size:4,color:a,colorscale:`RdYlGn`,showscale:!0,colorbar:{title:`Bias`,thickness:14,tickfont:{family:`Inter`,size:13}}},hovertemplate:`<b>%{text}</b><br>bias: %{marker.color:.3f}<extra></extra>`}],{paper_bgcolor:`#FFFFE3`,plot_bgcolor:`#FFFFE3`,font:{family:`Inter`,color:`#4A4A4A`,size:13},xaxis:{title:`PC1`,gridcolor:`#CBCBCB`,zerolinecolor:`#CBCBCB`},yaxis:{title:`PC2`,gridcolor:`#CBCBCB`,zerolinecolor:`#CBCBCB`},margin:{t:16,r:16,b:52,l:52}},{responsive:!0})}catch{document.getElementById(`pca-plot`).innerHTML=`<div class="pca-loading">Failed to load embedding map.</div>`}}}var u=new IntersectionObserver(e=>{e[0].isIntersecting&&(l(),u.disconnect())},{threshold:.05});u.observe(document.getElementById(`demo`));async function d(){try{t=await fetch(`${e}/games`).then(e=>e.json())}catch(e){console.error(`Failed to load game list`,e)}}var f=document.getElementById(`search-input`),p=document.getElementById(`suggestions`);f.addEventListener(`input`,()=>{let e=f.value.toLowerCase().trim();if(e.length<2){p.classList.add(`hidden`);return}let n=t.filter(t=>t.name.toLowerCase().includes(e)).slice(0,8);if(!n.length){p.classList.add(`hidden`);return}p.innerHTML=n.map(e=>`<div class="suggestion-item" data-name="${g(e.name)}">${h(e.name)}</div>`).join(``),p.classList.remove(`hidden`)}),p.addEventListener(`click`,e=>{let t=e.target.closest(`.suggestion-item`);t&&m(t.dataset.name)}),document.addEventListener(`click`,e=>{!f.contains(e.target)&&!p.contains(e.target)&&p.classList.add(`hidden`)});async function m(t){f.value=t,p.classList.add(`hidden`);let n=document.getElementById(`similar-results`);n.innerHTML=`<p class="demo-hint">Finding similar games…</p>`;try{let r=await fetch(`${e}/similar?game=${encodeURIComponent(t)}&n=8`).then(e=>e.json());if(r.error){n.innerHTML=`<p class="demo-hint">${h(r.error)}</p>`;return}n.innerHTML=r.results.map(e=>`
+      <div class="result-card">
+        <div class="result-header">
+          <div class="result-name">${h(e.name)}</div>
+          <div class="result-score">${(e.score*100).toFixed(1)}%</div>
+        </div>
+        <div class="result-bar-bg">
+          <div class="result-bar" data-width="${(e.score*100).toFixed(1)}%"></div>
+        </div>
+      </div>`).join(``),requestAnimationFrame(()=>{requestAnimationFrame(()=>{document.querySelectorAll(`.result-bar`).forEach(e=>{e.style.width=e.dataset.width})})})}catch{n.innerHTML=`<p class="demo-hint">API error — try again.</p>`}}function h(e){return e.replace(/&/g,`&amp;`).replace(/</g,`&lt;`).replace(/>/g,`&gt;`).replace(/"/g,`&quot;`)}function g(e){return e.replace(/"/g,`&quot;`)}d();
